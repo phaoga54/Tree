@@ -1,24 +1,40 @@
-import React from "react";
-import { Button, Image, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Button, Image, TouchableOpacity, View, Vibration } from "react-native";
 import Animated, { Easing, useAnimatedProps, useAnimatedStyle, useSharedValue, withRepeat, withSequence, withTiming } from "react-native-reanimated";
+import RNShake from 'react-native-shake';
 import { addCurve, createPath, interpolatePath } from "react-native-redash";
 import Svg, { Path } from "react-native-svg";
 import * as Helper from '../helper'
 import { polygonPath, starPath } from "./path";
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const PalmTree = ({ progress }) => {
-  const translate = useSharedValue(0);
-  const style = useAnimatedStyle(() => ({
-    transform: [{
-      rotateZ: translate.value
-    },
-    // { origin: { x: 'bottom' } }
-    ],
-  }));
+  const [shakeTime, setShakeTime] = useState(0)
+
+  const [translate] = useState(useSharedValue(0));
+  const [style] = useState(
+    useAnimatedStyle(() => ({
+      transform: [{
+        rotateZ: translate.value
+      },
+        // { origin: { x: 'bottom' } }
+      ],
+    }))
+  )
   const configTiming = {
     duration: 1000,
     easing: Easing.bounce,
   }
+  useEffect(() => {
+    RNShake.addEventListener('ShakeEvent', () => {
+      console.log('shakingggg ')
+      Vibration.vibrate(3000)
+      // Your code... 
+    })
+
+    return () => {
+      RNShake.removeEventListener('ShakeEvent')
+    }
+  }, [])
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'green' }}>
       <Animated.View
